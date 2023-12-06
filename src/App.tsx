@@ -26,8 +26,8 @@ type StationStatus = {
 type StationCombined = {
   key: React.Key;
   name: string;
-  num_bikes_available: number;
-  num_docks_available: number;
+  num_bikes_available: number | undefined;
+  num_docks_available: number | undefined;
 }
 
 function App() {
@@ -58,9 +58,9 @@ function App() {
           );
 
           return {
-            name: station?.name || 'Default Station Name',
-            num_bikes_available: status?.num_bikes_available || 0,
-            num_docks_available: status?.num_docks_available || 0,
+            name: station?.name || 'Ukjent stasjon',
+            num_bikes_available: status?.num_bikes_available,
+            num_docks_available: status?.num_docks_available,
             key: station?.station_id,
           };
         });
