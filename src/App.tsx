@@ -3,7 +3,6 @@ import "./App.css";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
-
 type StationInfo = {
   station_id: string;
   name: string;
@@ -28,7 +27,7 @@ type StationCombined = {
   name: string;
   num_bikes_available: number | undefined;
   num_docks_available: number | undefined;
-}
+};
 
 function App() {
   const [mergedData, setMergedData] = useState<StationCombined[]>([]);
@@ -38,14 +37,8 @@ function App() {
     const headers = { "Client-Identifier": "intervju-bym" };
 
     Promise.all([
-      fetch(
-        `${url}/oslobysykkel.no/station_information.json`,
-        { headers }
-      ),
-      fetch(
-        `${url}/oslobysykkel.no/station_status.json`,
-        { headers }
-      ),
+      fetch(`${url}/oslobysykkel.no/station_information.json`, { headers }),
+      fetch(`${url}/oslobysykkel.no/station_status.json`, { headers }),
     ])
       .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
       .then(([data1, data2]) => {
@@ -58,7 +51,7 @@ function App() {
           );
 
           return {
-            name: station?.name || 'Ukjent stasjon',
+            name: station?.name || "Ukjent stasjon",
             num_bikes_available: status?.num_bikes_available,
             num_docks_available: status?.num_docks_available,
             key: station?.station_id,
@@ -72,19 +65,19 @@ function App() {
 
   const columns: ColumnsType<StationCombined> = [
     {
-      title: "Name",
+      title: "Navn",
       dataIndex: "name",
       key: "name",
-    },
-    {
-      title: "Ledige sykler",
-      dataIndex: "num_bikes_available",
-      key: "num_bikes_available",
     },
     {
       title: "Ledige låser",
       dataIndex: "num_docks_available",
       key: "num_docks_available",
+    },
+    {
+      title: "Ledige sykler",
+      dataIndex: "num_bikes_available",
+      key: "num_bikes_available",
     },
   ];
 
