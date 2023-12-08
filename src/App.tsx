@@ -22,7 +22,7 @@ type StationStatus = {
   is_returning: number;
 };
 
-type StationCombined = {
+type BysykkelStasjon = {
   key: React.Key;
   name: string;
   num_bikes_available: number | undefined;
@@ -30,12 +30,12 @@ type StationCombined = {
 };
 
 function App() {
-  const [mergedData, setMergedData] = useState<StationCombined[]>([]);
+  const [bysykkelData, setBysykkelData] = useState<BysykkelStasjon[]>([]);
   const url = "https://gbfs.urbansharing.com";
-
+  
   useEffect(() => {
     const headers = { "Client-Identifier": "intervju-bym" };
-
+    // Henter data fra stasjon_info og station_status
     Promise.all([
       fetch(`${url}/oslobysykkel.no/station_information.json`, { headers }),
       fetch(`${url}/oslobysykkel.no/station_status.json`, { headers }),
@@ -45,25 +45,28 @@ function App() {
         const stationInfo: StationInfo[] = data1.data.stations;
         const stationStatus: StationStatus[] = data2.data.stations;
 
-        const merged: StationCombined[] = stationInfo.map((station) => {
-          const status = stationStatus.find(
-            (status) => status.station_id === station.station_id
-          );
+        // Kombinerer data fra begge kallene basert på station_id
+        const combinedStationData: BysykkelStasjon[] = stationInfo.map(
+          (station) => {
+            const status = stationStatus.find(
+              (status) => status.station_id === station.station_id
+            );
 
-          return {
-            name: station?.name || "Ukjent stasjon",
-            num_bikes_available: status?.num_bikes_available,
-            num_docks_available: status?.num_docks_available,
-            key: station?.station_id,
-          };
-        });
+            return {
+              name: station?.name || "Ukjent stasjon",
+              num_bikes_available: status?.num_bikes_available,
+              num_docks_available: status?.num_docks_available,
+              key: station?.station_id,
+            };
+          }
+        );
 
-        setMergedData(merged);
+        setBysykkelData(combinedStationData);
       })
       .catch((error) => console.error("Error fetching data: ", error));
   }, []);
 
-  const columns: ColumnsType<StationCombined> = [
+  const columns: ColumnsType<BysykkelStasjon> = [
     {
       title: "Navn",
       dataIndex: "name",
@@ -84,7 +87,7 @@ function App() {
   return (
     <>
       <h1>Oslo Bysykkel</h1>
-      <Table bordered columns={columns} dataSource={mergedData} />
+      <Table bordered columns={columns} dataSource={bysykkelData} />
     </>
   );
 }
